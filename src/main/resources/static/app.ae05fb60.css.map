@@ -1,0 +1,1 @@
+{"version":3,"sources":["app.css"],"names":[],"mappings":"AAAA;AACA;AACA;AACA;AACA;AACA;AACA;AACA;AACA;AACA","file":"app.ae05fb60.css","sourceRoot":"..\\src","sourcesContent":["* {\r\n    font-family: sans-serif;\r\n}\r\n\r\n.gridArea {\r\n    table {\r\n        max-width: 700px;\r\n        margin: auto;\r\n    }\r\n}"]}
