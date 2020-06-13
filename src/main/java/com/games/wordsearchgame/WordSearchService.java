@@ -46,10 +46,11 @@ public class WordSearchService {
 		char[][] grid_array = new char[gridSize][gridSize];		
 		for(int i=0; i<grid_array.length; i++)
 			for(int j=0; j<grid_array.length; j++) {
-				coordinates.add(new Coordinate(i, j));
+				if(j != 0)
+					coordinates.add(new Coordinate(i, j)); // temporary fix
 				grid_array[i][j] = '-';
 			}
-		for(String word: words) {
+		for(String word: words) {			
 			Collections.shuffle(coordinates);
 			for(Coordinate coordinate : coordinates) {
 				int x = coordinate.x;
@@ -141,7 +142,7 @@ public class WordSearchService {
 			}
 			break;	
 		case HORIZONTAL_INVERSE:
-			if (coordinate.y  >= word.length()-1) {
+			if (coordinate.y  > word.length()-1) {   //Temporary fix
 				for(int i=0; i< word.length(); i++) {
 					char letter = grid_array[coordinate.x][coordinate.y-i];				
 					if(letter != '-' && letter != word.charAt(i))
@@ -161,7 +162,7 @@ public class WordSearchService {
 			}
 			break;
 		case DIAGONAL_INVERSE:
-			if (coordinate.y  >= word.length()-1 && coordinate.x >= word.length()-1) {
+			if (coordinate.y  > word.length()-1 && coordinate.x >= word.length()-1) {  //Temporary fix
 				for(int i=0; i< word.length(); i++) {
 					char letter = grid_array[coordinate.x-i][coordinate.y-i];				
 					if(letter != '-' && letter != word.charAt(i))

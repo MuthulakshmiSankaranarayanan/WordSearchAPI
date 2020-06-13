@@ -984,21 +984,7 @@ var Grid = /*#__PURE__*/function () {
         for (var _i2 = 0; _i2 <= delta; _i2++) {
           cellsInRange.push(this.gridArea.querySelector("td[data-x=\"".concat(firstLetter.x + _i2, "\"][data-y=\"").concat(firstLetter.y + _i2, "\"]")));
         }
-      } //  else if(currentLetter.y - firstLetter.y === firstLetter.x - currentLetter.x){
-      //      console.log("Left = ", firstLetter.x - currentLetter.x);
-      //      console.log("right= ", currentLetter.y - firstLetter.y);
-      //      let delta = currentLetter.y - firstLetter.y;
-      //       for(let i = 0; i <= delta; i++){
-      ///         cellsInRange.push(this.gridArea.querySelector(`td[data-x="${firstLetter.x-i}"][data-y="${firstLetter.y+i}"]`));
-      //        }
-      //   } 
-      //   else if(firstLetter.y - currentLetter.y === currentLetter.x - firstLetter.x){
-      //       let delta = firstLetter.y - currentLetter.y;
-      //       for(let i = 0; i <= delta; i++){
-      //         cellsInRange.push(this.gridArea.querySelector(`td[data-x="${firstLetter.x+i}"][data-y="${firstLetter.y-i}"]`));
-      //       }
-      //   }  
-
+      }
 
       return cellsInRange;
     }
@@ -1075,14 +1061,42 @@ var Grid = /*#__PURE__*/function () {
 
         var selectedWord = _this.selectedItems.reduce(function (word, cell) {
           return word += cell.getAttribute("data-letter");
-        }, '');
+        }, "");
 
         var reverseSelectedWord = selectedWord.split("").reverse().join("");
 
         if (_this.words.indexOf(selectedWord) !== -1) {
           _this.foundWords.push(selectedWord);
+
+          var wordListSection = document.querySelector(".word-list");
+
+          while (wordListSection.lastChild) {
+            wordListSection.removeChild(wordListSection.lastChild);
+          }
+
+          for (var i = 0; i < _this.words.length; i++) {
+            if (_this.foundWords.indexOf(_this.words[i]) !== -1) {
+              document.getElementById("word-list").innerHTML += "<span style='text-decoration:line-through'>" + _this.words[i] + "  </span>";
+            } else {
+              document.getElementById("word-list").innerHTML += "<span style='color:blue'>" + _this.words[i] + "  </span>";
+            }
+          }
         } else if (_this.words.indexOf(reverseSelectedWord) !== -1) {
           _this.foundWords.push(reverseSelectedWord);
+
+          var _wordListSection = document.querySelector(".word-list");
+
+          while (_wordListSection.lastChild) {
+            _wordListSection.removeChild(_wordListSection.lastChild);
+          }
+
+          for (var i = 0; i < _this.words.length; i++) {
+            if (_this.foundWords.indexOf(_this.words[i]) !== -1) {
+              document.getElementById("word-list").innerHTML += "<span style='text-decoration:line-through'>" + _this.words[i] + "  </span>";
+            } else {
+              document.getElementById("word-list").innerHTML += "<span style='color:blue'>" + _this.words[i] + "  </span>";
+            }
+          }
         } else {
           _this.selectedItems.forEach(function (item) {
             return item.classList.remove("selected");
@@ -1090,6 +1104,18 @@ var Grid = /*#__PURE__*/function () {
         }
 
         _this.selectedItems = [];
+
+        if (_this.foundWords.length === _this.words.length) {
+          var foundWordsSection = document.querySelector(".found-words");
+
+          while (foundWordsSection.lastChild) {
+            foundWordsSection.removeChild(foundWordsSection.lastChild);
+          } //let foundWordsNode = document.createTextNode("Congratulation, You found all the words !!");
+          // foundWordsSection.appendChild(foundWordsNode);
+
+
+          document.getElementById("found-words").innerHTML += "<span style='color:blue'> Congratulations, You have found all the words!!  </span>";
+        }
       });
     }
   }]);
@@ -1110,7 +1136,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var submitWordsBtn = document.querySelector(".submitWords");
 submitWordsBtn.addEventListener("click", /*#__PURE__*/(0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee() {
-  var grid, commaSeparatedWords, gridSize, result, wordListNode, wordListSection;
+  var grid, commaSeparatedWords, gridSize, result, wordListNode, wordListSection, foundWordsListNode, foundWordsListSection;
   return _regenerator.default.wrap(function _callee$(_context) {
     while (1) {
       switch (_context.prev = _context.next) {
@@ -1119,22 +1145,30 @@ submitWordsBtn.addEventListener("click", /*#__PURE__*/(0, _asyncToGenerator2.def
           commaSeparatedWords = document.querySelector("#WordsTextBox").value;
           gridSize = document.querySelector("#grid-size").value;
           _context.next = 5;
-          return fetchGridInfo(gridSize, commaSeparatedWords);
+          return fetchGridInfo(gridSize, commaSeparatedWords.split(' ').join('').toUpperCase());
 
         case 5:
           result = _context.sent;
-          grid.words = commaSeparatedWords.split(",");
+          grid.words = commaSeparatedWords.split(' ').join('').toUpperCase().split(",");
           grid.renderGrid(gridSize, result);
           wordListNode = document.createTextNode(grid.words);
           wordListSection = document.querySelector(".word-list");
 
-          if (wordListSection.lastChild) {
+          while (wordListSection.lastChild) {
             wordListSection.removeChild(wordListSection.lastChild);
           }
 
           wordListSection.appendChild(wordListNode);
+          foundWordsListNode = document.createTextNode(grid.foundWords);
+          foundWordsListSection = document.querySelector(".found-words");
 
-        case 12:
+          if (foundWordsListSection.lastChild) {
+            foundWordsListSection.removeChild(foundWordsListSection.lastChild);
+          }
+
+          foundWordsListSection.appendChild(foundWordsListNode);
+
+        case 16:
         case "end":
           return _context.stop();
       }
@@ -1154,7 +1188,7 @@ function _fetchGridInfo() {
         switch (_context2.prev = _context2.next) {
           case 0:
             _context2.next = 2;
-            return fetch("./wordgrid?gridSize=".concat(gridSize, "&stringOfWords=").concat(commaSeparatedWords));
+            return fetch("http://localhost:8080/wordgrid?gridSize=".concat(gridSize, "&stringOfWords=").concat(commaSeparatedWords));
 
           case 2:
             response = _context2.sent;
@@ -1202,7 +1236,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49952" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "59634" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
